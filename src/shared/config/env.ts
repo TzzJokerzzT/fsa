@@ -24,8 +24,12 @@ const getEnvBool = (key: string, fallback: boolean): boolean => {
 };
 
 export const env = {
-  API_URL: getEnvVar('VITE_API_URL', 'http://localhost:3000/api'),
-  NODE_ENV: getEnvVar('MODE', 'development'),
-  IS_DEV: getEnvBool('DEV', true),
-  IS_PROD: getEnvBool('PROD', false),
+  // API_URL: getEnvVar('VITE_API_URL', 'http://localhost:3000/api'),
+  API_URL: getEnvVar(
+    "VITE_API_URL",
+    "https://fsa-backend-2ks0.onrender.com/api",
+  ),
+  NODE_ENV: getEnvVar("MODE", "development"),
+  IS_DEV: getEnvBool("DEV", true),
+  IS_PROD: getEnvBool("PROD", false),
 } as const;
