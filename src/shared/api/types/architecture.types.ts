@@ -30,6 +30,12 @@ export type NodeType =
 // Edge types
 export type EdgeType = 'props' | 'state' | 'event' | 'import' | 'context';
 
+// Edge direction
+export type EdgeDirection =
+  | 'source-to-target'
+  | 'target-to-source'
+  | 'bidirectional';
+
 // Position
 export interface Position {
   x: number;
@@ -82,6 +88,7 @@ export interface EdgeData {
   type: EdgeType;
   label?: string;
   animated?: boolean;
+  direction?: EdgeDirection;
 }
 
 // Architecture edge
