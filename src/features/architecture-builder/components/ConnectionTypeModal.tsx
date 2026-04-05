@@ -1,15 +1,18 @@
 import { motion } from 'framer-motion';
 import {
   type ArrowRight,
+  ArrowRightLeft,
   Box,
   Database,
   FileInput,
   MessageSquare,
+  MoveLeft,
+  MoveRight,
   Share2,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/shared/lib/cn';
-import type { EdgeType } from '@/shared/types';
+import type { EdgeDirection, EdgeType } from '@/shared/types';
 import { Button, Input, Modal, ModalFooter } from '@/shared/ui';
 
 /**
@@ -19,7 +22,7 @@ import { Button, Input, Modal, ModalFooter } from '@/shared/ui';
 interface ConnectionTypeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (type: EdgeType, label?: string) => void;
+  onSelect: (type: EdgeType, label?: string, direction?: EdgeDirection) => void;
   sourceLabel?: string;
   targetLabel?: string;
 }
@@ -79,6 +82,7 @@ export function ConnectionTypeModal({
 }: ConnectionTypeModalProps) {
   const [selectedType, setSelectedType] = useState<EdgeType | null>(null);
   const [edgeLabel, setEdgeLabel] = useState('');
+  const [direction, setDirection] = useState<EdgeDirection>('source-to-target');
 
   const handleSelect = (type: EdgeType) => {
     setSelectedType(type);
@@ -86,7 +90,7 @@ export function ConnectionTypeModal({
 
   const handleConfirm = () => {
     if (selectedType) {
-      onSelect(selectedType, edgeLabel.trim() || undefined);
+      onSelect(selectedType, edgeLabel.trim() || undefined, direction);
       handleClose();
     }
   };
@@ -94,11 +98,12 @@ export function ConnectionTypeModal({
   const handleClose = () => {
     setSelectedType(null);
     setEdgeLabel('');
+    setDirection('source-to-target');
     onClose();
   };
 
   const handleDoubleClick = (type: EdgeType) => {
-    onSelect(type, undefined);
+    onSelect(type, undefined, direction);
     handleClose();
   };
 
@@ -184,7 +189,63 @@ export function ConnectionTypeModal({
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
+            className="space-y-4"
           >
+            {/* Direction Selector */}
+            <div className="space-y-2">
+              <span className="text-sm font-medium text-text-primary">
+                Direction
+              </span>
+              <div className="grid grid-cols-3 gap-2">
+                {(
+                  [
+                    {
+                      value: 'source-to-target',
+                      label: sourceLabel || 'Source',
+                      sublabel: targetLabel || 'Target',
+                      icon: MoveRight,
+                    },
+                    {
+                      value: 'target-to-source',
+                      label: targetLabel || 'Target',
+                      sublabel: sourceLabel || 'Source',
+                      icon: MoveLeft,
+                    },
+                    {
+                      value: 'bidirectional',
+                      label: 'Both',
+                      sublabel: 'directions',
+                      icon: ArrowRightLeft,
+                    },
+                  ] as const
+                ).map((opt) => {
+                  const Icon = opt.icon;
+                  const isActive = direction === opt.value;
+                  return (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setDirection(opt.value)}
+                      className={cn(
+                        'flex flex-col items-center gap-1 p-2 rounded-lg border-2 transition-all duration-150',
+                        isActive
+                          ? 'border-accent-500 bg-accent-500/10 text-accent-400'
+                          : 'border-transparent bg-surface-300/50 hover:bg-surface-300 text-text-secondary',
+                      )}
+                    >
+                      <Icon className="w-5 h-5" />
+                      <span className="text-[10px] leading-tight truncate w-full text-center">
+                        {opt.label}
+                      </span>
+                      <span className="text-[10px] leading-tight text-text-muted truncate w-full text-center">
+                        → {opt.sublabel}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <Input
               label="Label (optional)"
               value={edgeLabel}

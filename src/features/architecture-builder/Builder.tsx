@@ -33,7 +33,12 @@ import {
 } from '@/features/templates';
 import { useAutoSave } from '@/shared/api/hooks';
 import { useBoolean, useHotkey } from '@/shared/hooks';
-import type { ArchitectureType, EdgeType, NodeType } from '@/shared/types';
+import type {
+  ArchitectureType,
+  EdgeDirection,
+  EdgeType,
+  NodeType,
+} from '@/shared/types';
 import {
   Button,
   Input,
@@ -179,14 +184,14 @@ function BuilderContent() {
 
   // Create the edge after user selects connection type
   const handleConnectionTypeSelect = useCallback(
-    (type: EdgeType, label?: string) => {
+    (type: EdgeType, label?: string, direction?: EdgeDirection) => {
       if (pendingConnection?.source && pendingConnection?.target) {
         storeAddEdge({
           source: pendingConnection.source,
           target: pendingConnection.target,
           sourceHandle: pendingConnection.sourceHandle || undefined,
           targetHandle: pendingConnection.targetHandle || undefined,
-          data: { type, label },
+          data: { type, label, direction },
         });
       }
       setPendingConnection(null);

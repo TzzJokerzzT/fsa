@@ -1,10 +1,13 @@
 import { motion } from 'framer-motion';
 import {
   ArrowRight,
+  ArrowRightLeft,
   Box,
   Database,
   FileInput,
   MessageSquare,
+  MoveLeft,
+  MoveRight,
   Share2,
   Trash2,
   X,
@@ -12,7 +15,7 @@ import {
 import { useMemo } from 'react';
 import { useArchitectureStore, useCurrentArchitecture } from '@/app/store';
 import { cn } from '@/shared/lib/cn';
-import type { EdgeType } from '@/shared/types';
+import type { EdgeDirection, EdgeType } from '@/shared/types';
 import { Badge, Button, Divider, Input } from '@/shared/ui';
 
 /**
@@ -95,6 +98,12 @@ export function EdgePropertiesPanel() {
     }
   };
 
+  const handleDirectionChange = (direction: EdgeDirection) => {
+    if (singleEdge) {
+      updateEdge(singleEdge.id, { direction });
+    }
+  };
+
   const handleDelete = () => {
     for (const edge of selectedEdges) {
       deleteEdge(edge.id);
@@ -141,7 +150,13 @@ export function EdgePropertiesPanel() {
                 <span className="text-text-primary font-medium truncate">
                   {sourceNode?.data.label || 'Unknown'}
                 </span>
-                <ArrowRight className="w-4 h-4 text-text-muted flex-shrink-0" />
+                {singleEdge.data.direction === 'target-to-source' ? (
+                  <MoveLeft className="w-4 h-4 text-text-muted flex-shrink-0" />
+                ) : singleEdge.data.direction === 'bidirectional' ? (
+                  <ArrowRightLeft className="w-4 h-4 text-text-muted flex-shrink-0" />
+                ) : (
+                  <ArrowRight className="w-4 h-4 text-text-muted flex-shrink-0" />
+                )}
                 <span className="text-text-primary font-medium truncate">
                   {targetNode?.data.label || 'Unknown'}
                 </span>
@@ -149,6 +164,65 @@ export function EdgePropertiesPanel() {
               <p className="text-xs text-text-muted mt-1">
                 Drag the edge endpoints to reconnect
               </p>
+            </div>
+
+            <Divider />
+
+            {/* Direction */}
+            <div className="space-y-2">
+              <span className="text-sm font-medium text-text-primary">
+                Direction
+              </span>
+              <div className="grid grid-cols-3 gap-2">
+                {(
+                  [
+                    {
+                      value: 'source-to-target',
+                      label: sourceNode?.data.label || 'Source',
+                      sublabel: targetNode?.data.label || 'Target',
+                      icon: MoveRight,
+                    },
+                    {
+                      value: 'target-to-source',
+                      label: targetNode?.data.label || 'Target',
+                      sublabel: sourceNode?.data.label || 'Source',
+                      icon: MoveLeft,
+                    },
+                    {
+                      value: 'bidirectional',
+                      label: 'Both',
+                      sublabel: 'directions',
+                      icon: ArrowRightLeft,
+                    },
+                  ] as const
+                ).map((opt) => {
+                  const Icon = opt.icon;
+                  const currentDirection =
+                    singleEdge.data.direction || 'source-to-target';
+                  const isActive = currentDirection === opt.value;
+                  return (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => handleDirectionChange(opt.value)}
+                      className={cn(
+                        'flex flex-col items-center gap-1 p-2 rounded-lg border-2 transition-all duration-150',
+                        isActive
+                          ? 'border-accent-500 bg-accent-500/10 text-accent-400'
+                          : 'border-transparent bg-surface-300 hover:bg-surface-400 text-text-secondary',
+                      )}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span className="text-[10px] leading-tight truncate w-full text-center">
+                        {opt.label}
+                      </span>
+                      <span className="text-[10px] leading-tight text-text-muted truncate w-full text-center">
+                        → {opt.sublabel}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <Divider />

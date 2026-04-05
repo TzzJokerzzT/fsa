@@ -2,7 +2,7 @@ import type { EdgeProps } from '@xyflow/react';
 import { BaseEdge, getSmoothStepPath } from '@xyflow/react';
 import { motion } from 'framer-motion';
 import { memo } from 'react';
-import type { EdgeType } from '@/shared/types';
+import type { EdgeDirection, EdgeType } from '@/shared/types';
 import {
   useActivePackets,
   useHighlightedEdges,
@@ -11,11 +11,13 @@ import {
 /**
  * AnimatedEdge - Custom React Flow edge with data flow animation
  * Shows flowing particles when data is being transmitted
+ * Supports directional arrows and reversed animation
  */
 
 interface AnimatedEdgeData {
   type: EdgeType;
   label?: string;
+  direction?: EdgeDirection;
 }
 
 const edgeColors: Record<EdgeType, string> = {
@@ -45,6 +47,11 @@ function AnimatedEdgeComponent({
 
   const edgeType = data?.type || 'props';
   const color = edgeColors[edgeType];
+  const direction = data?.direction || 'source-to-target';
+
+  // Dash animation offset based on direction
+  // Negative = source-to-target, Positive = target-to-source
+  const dashTarget = direction === 'target-to-source' ? 16 : -16;
 
   // Calculate edge path
   const [edgePath, labelX, labelY] = getSmoothStepPath({
@@ -86,61 +93,85 @@ function AnimatedEdgeComponent({
 
       {/* Animated flow indicator (dashed line moving) */}
       {isHighlighted && (
-        <motion.path
-          d={edgePath}
-          fill="none"
-          stroke={color}
-          strokeWidth={2}
-          strokeDasharray="8 8"
-          initial={{ strokeDashoffset: 0 }}
-          animate={{ strokeDashoffset: -16 }}
-          transition={{
-            duration: 0.5,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: 'linear',
-          }}
-          style={{ opacity: 0.6 }}
-        />
+        <>
+          <motion.path
+            d={edgePath}
+            fill="none"
+            stroke={color}
+            strokeWidth={2}
+            strokeDasharray="8 8"
+            initial={{ strokeDashoffset: 0 }}
+            animate={{ strokeDashoffset: dashTarget }}
+            transition={{
+              duration: 0.5,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: 'linear',
+            }}
+            style={{ opacity: 0.6 }}
+          />
+          {direction === 'bidirectional' && (
+            <motion.path
+              d={edgePath}
+              fill="none"
+              stroke={color}
+              strokeWidth={2}
+              strokeDasharray="8 8"
+              initial={{ strokeDashoffset: 0 }}
+              animate={{ strokeDashoffset: 16 }}
+              transition={{
+                duration: 0.5,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: 'linear',
+              }}
+              style={{ opacity: 0.35 }}
+            />
+          )}
+        </>
       )}
 
       {/* Data packets (circles moving along the path) */}
-      {packetsOnEdge.map((packet) => (
-        <motion.g key={packet.id}>
-          {/* Packet glow */}
-          <motion.circle
-            r={8}
-            fill={color}
-            opacity={0.3}
-            initial={{ offsetDistance: '0%' }}
-            animate={{ offsetDistance: `${packet.progress * 100}%` }}
-            style={{
-              offsetPath: `path("${edgePath}")`,
-            }}
-          />
-          {/* Packet core */}
-          <motion.circle
-            r={5}
-            fill={color}
-            initial={{ offsetDistance: '0%' }}
-            animate={{ offsetDistance: `${packet.progress * 100}%` }}
-            style={{
-              offsetPath: `path("${edgePath}")`,
-              filter: 'drop-shadow(0 0 4px currentColor)',
-            }}
-          />
-          {/* Inner highlight */}
-          <motion.circle
-            r={2}
-            fill="white"
-            opacity={0.8}
-            initial={{ offsetDistance: '0%' }}
-            animate={{ offsetDistance: `${packet.progress * 100}%` }}
-            style={{
-              offsetPath: `path("${edgePath}")`,
-            }}
-          />
-        </motion.g>
-      ))}
+      {packetsOnEdge.map((packet) => {
+        // Reverse packet progress for target-to-source edges
+        const progress =
+          direction === 'target-to-source'
+            ? (1 - packet.progress) * 100
+            : packet.progress * 100;
+
+        return (
+          <g key={packet.id}>
+            {/* Packet glow */}
+            <circle
+              r={8}
+              fill={color}
+              opacity={0.3}
+              style={{
+                offsetPath: `path("${edgePath}")`,
+                offsetDistance: `${progress}%`,
+              }}
+            />
+            {/* Packet core */}
+            <circle
+              r={5}
+              fill={color}
+              style={{
+                offsetPath: `path("${edgePath}")`,
+                offsetDistance: `${progress}%`,
+                filter: 'drop-shadow(0 0 4px currentColor)',
+              }}
+            />
+            {/* Inner highlight */}
+            <circle
+              r={2}
+              fill="white"
+              opacity={0.8}
+              style={{
+                offsetPath: `path("${edgePath}")`,
+                offsetDistance: `${progress}%`,
+              }}
+            />
+          </g>
+        );
+      })}
 
       {/* Edge label */}
       {data?.label && (
