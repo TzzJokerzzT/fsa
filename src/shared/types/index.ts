@@ -72,10 +72,16 @@ export interface ArchitectureNode {
 
 export type EdgeType = 'props' | 'state' | 'event' | 'import' | 'context';
 
+export type EdgeDirection =
+  | 'source-to-target'
+  | 'target-to-source'
+  | 'bidirectional';
+
 export interface EdgeData {
   type: EdgeType;
   label?: string;
   animated?: boolean;
+  direction?: EdgeDirection;
 }
 
 export type HandlePosition = 'top' | 'right' | 'bottom' | 'left';

@@ -1,4 +1,4 @@
-import { ComponentNode } from "../components";
+import { ComponentNode } from '../components';
 
 // Custom node types mapping
 export const nodeTypes = {
