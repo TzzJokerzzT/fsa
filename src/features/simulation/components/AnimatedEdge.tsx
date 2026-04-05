@@ -138,41 +138,38 @@ function AnimatedEdgeComponent({
             : packet.progress * 100;
 
         return (
-          <motion.g key={packet.id}>
+          <g key={packet.id}>
             {/* Packet glow */}
-            <motion.circle
+            <circle
               r={8}
               fill={color}
               opacity={0.3}
-              initial={{ offsetDistance: '0%' }}
-              animate={{ offsetDistance: `${progress}%` }}
               style={{
                 offsetPath: `path("${edgePath}")`,
+                offsetDistance: `${progress}%`,
               }}
             />
             {/* Packet core */}
-            <motion.circle
+            <circle
               r={5}
               fill={color}
-              initial={{ offsetDistance: '0%' }}
-              animate={{ offsetDistance: `${progress}%` }}
               style={{
                 offsetPath: `path("${edgePath}")`,
+                offsetDistance: `${progress}%`,
                 filter: 'drop-shadow(0 0 4px currentColor)',
               }}
             />
             {/* Inner highlight */}
-            <motion.circle
+            <circle
               r={2}
               fill="white"
               opacity={0.8}
-              initial={{ offsetDistance: '0%' }}
-              animate={{ offsetDistance: `${progress}%` }}
               style={{
                 offsetPath: `path("${edgePath}")`,
+                offsetDistance: `${progress}%`,
               }}
             />
-          </motion.g>
+          </g>
         );
       })}
 
