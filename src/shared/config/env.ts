@@ -8,7 +8,7 @@
  */
 
 export const env = {
-  API_URL: import.meta.env.API_URL ?? 'https://fsa-backend.vercel.app',
+  API_URL: import.meta.env.API_URL,
   NODE_ENV: import.meta.env.MODE,
   IS_DEV: import.meta.env.DEV,
   IS_PROD: import.meta.env.PROD,
