@@ -88,6 +88,9 @@ export default defineConfig({
       ),
       'import.meta.env.DEV': JSON.stringify(isDev),
       'import.meta.env.PROD': JSON.stringify(!isDev),
+      'import.meta.env.API_URL': JSON.stringify(
+        isDev ? '' : 'https://fsa-backend.vercel.app',
+      ),
       ...envVars,
     }),
     isDev ? new ReactRefreshRspackPlugin() : null,
@@ -144,7 +147,7 @@ export default defineConfig({
     css: true,
   },
   devServer: {
-    port: 8080,
+    port: 3000,
     hot: true,
     liveReload: true,
 
@@ -175,13 +178,14 @@ export default defineConfig({
     //   'Access-Control-Allow-Origin': '*',
     // },
 
-    // Proxy opcional: redirige /api al backend local
-    // proxy: [
-    //   {
-    //     context: ["/api"],
-    //     target: "http://localhost:4000",
-    //     changeOrigin: true,
-    //   },
-    // ],
+    // Proxy: redirige /api al backend (evita CORS en desarrollo)
+    proxy: [
+      {
+        context: ['/api'],
+        target: 'https://fsa-backend.vercel.app',
+        changeOrigin: true,
+        secure: true,
+      },
+    ],
   },
 });

@@ -22,10 +22,11 @@ export interface LoginRequest {
   password: string;
 }
 
-// Login response
+// Login response — matches backend flat structure
 export interface LoginResponse {
+  accessToken: string;
+  refreshToken: string;
   user: AuthUser;
-  tokens: Tokens;
 }
 
 // Register request payload

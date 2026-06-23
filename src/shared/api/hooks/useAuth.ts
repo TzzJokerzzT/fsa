@@ -24,8 +24,11 @@ export function useLogin() {
   return useMutation({
     mutationFn: (data: LoginRequest) => authService.login(data),
     onSuccess: (response) => {
-      // Store auth data
-      setAuth(response.user, response.tokens);
+      // Store auth data — backend returns flat { accessToken, refreshToken, user }
+      setAuth(response.user, {
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+      });
 
       // Invalidate any cached user data
       queryClient.invalidateQueries({ queryKey: queryKeys.user.all });
