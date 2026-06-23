@@ -182,7 +182,7 @@ export default defineConfig({
     proxy: [
       {
         context: ['/api'],
-        // target: 'https://fsa-backend.vercel.app',
+        target: 'https://fsa-backend.vercel.app',
         changeOrigin: true,
         secure: true,
       },
