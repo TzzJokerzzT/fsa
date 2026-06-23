@@ -54,21 +54,10 @@ const createApiClient = (): AxiosInstance => {
   // Request interceptor - add auth token
   client.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
-      const state = useAuthStore.getState();
-      console.log(
-        '[apiClient] interceptor - accessToken:',
-        state.accessToken?.substring(0, 20) + '...',
-        'isAuthenticated:',
-        state.isAuthenticated,
-        'isHydrated:',
-        state.isHydrated,
-      );
+      const { accessToken } = useAuthStore.getState();
 
-      if (state.accessToken && config.headers) {
-        config.headers.Authorization = `Bearer ${state.accessToken}`;
-        console.log('[apiClient] Authorization header set');
-      } else {
-        console.log('[apiClient] NO token available, skipping Authorization');
+      if (accessToken && config.headers) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
       }
 
       return config;
