@@ -103,7 +103,7 @@ const createApiClient = (): AxiosInstance => {
         try {
           // Attempt to refresh the token
           const response = await axios.post<RefreshTokenResponse>(
-            `${env.API_URL}/auth/refresh`,
+            `${env.API_URL}/api/auth/refresh`,
             { refreshToken },
             { headers: { 'Content-Type': 'application/json' } },
           );
