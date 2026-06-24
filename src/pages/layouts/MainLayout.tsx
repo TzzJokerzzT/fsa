@@ -18,6 +18,7 @@ import {
   useArchitectureStore,
   useUser,
 } from '@/app/store';
+import logo from '@/assets/logo.png';
 import { useLogout } from '@/shared/api/hooks';
 import { cn } from '@/shared/lib/cn';
 import { Button, Divider, Tooltip } from '@/shared/ui';
@@ -60,7 +61,11 @@ export function MainLayout() {
         {/* Logo */}
         <div className="flex items-center gap-3 p-4 h-16">
           <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-white">
-            <GitBranch className="w-5 h-5" />
+            <img
+              src={logo}
+              aria-label="Frontend Architecture Logo"
+              className="rounded-lg"
+            />
           </div>
           <AnimatePresence>
             {sidebarOpen && (

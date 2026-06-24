@@ -4,8 +4,8 @@
  */
 
 import { motion } from 'framer-motion';
-import { GitBranch } from 'lucide-react';
 import { Link, Outlet } from 'react-router-dom';
+import logo from '@/assets/logo.png';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -45,7 +45,11 @@ export function AuthLayout() {
             className="flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg p-2 -m-2"
           >
             <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary text-white shadow-lg">
-              <GitBranch className="w-7 h-7" />
+              <img
+                src={logo}
+                aria-label="Frontend Architecture Logo"
+                className="rounded-lg"
+              />
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-bold text-text-primary">
